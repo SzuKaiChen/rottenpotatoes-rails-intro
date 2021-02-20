@@ -16,6 +16,13 @@ class MoviesController < ApplicationController
     @ratings_to_show = params[:ratings] || session[:ratings_to_show]
     @sort = params[:sort] || session[:sort] 
     
+    case @sort
+    when 'title'
+     @title_header = 'hilite'
+    when 'release_date'
+     @release_date_header = 'hilite'
+    end
+    
     if @ratings_to_show.nil?
       @movies = Movie.all
     else
