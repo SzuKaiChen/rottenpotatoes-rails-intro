@@ -7,40 +7,25 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @ratings_to_show = ['G','PG','PG-13','R']
+    if params[:ratings].nil? and params[:commit] 
+      session.delete(:ratings_to_show) 
+      session.delete(:sort) 
+    end
+    
     @all_ratings = ['G','PG','PG-13','R']
-    @ratings = params[:ratings] || session[:ratings] || @all_ratings.map{ |rating| [rating,1] }.to_h
-    @ratings_to_show = @ratings
-    @movies = Movie.with_ratings(@ratings)
+    @ratings_to_show = params[:ratings] || session[:ratings_to_show]
+    @sort = params[:sort] || session[:sort] 
     
-    @sort = params[:sort] || session[:sort]
-    case @sort
-    when 'title'
-     @title_header = 'hilite'
-    when 'release_date'
-     @release_date_header = 'hilite'
-    end
-    
-    if @ratings == {}
-      Hash[@ratings.map {|rating| [rating, rating]}]
-    end
-    
-    if params[:sort] != session[:sort]
-      session[:sort] = @sort
-      redirect_to :sort => @sort, :ratings => @ratings and return
-    end
-    
-    if params[:ratings] != session[:ratings] 
-      session[:sort] = @sort
-      session[:ratings] = @ratings
-      redirect_to :sort => @sort, :ratings => @ratings and return
-    end
-    
-    if @sort
-      @movies = Movie.with_ratings(@ratings).order(@sort)
+    if @ratings_to_show.nil?
+      @movies = Movie.all
     else
-      @movies = Movie.with_ratings(@ratings)
+      @movies = Movie.where(rating: @ratings_to_show.keys)
     end
+
+    @movies = @movies.order(@sort)
+    
+    session[:sort] = @sort
+    session[:ratings_to_show] = @ratings_to_show
   end
 
   def new
