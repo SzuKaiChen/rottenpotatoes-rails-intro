@@ -1,2 +1,3 @@
 GitHub repo URL: https://github.com/SzuKaiChen/rottenpotatoes-rails-intro
 Heroku URL: https://lit-cliffs-30413.herokuapp.com/
+Ruby version: 2.6.4
